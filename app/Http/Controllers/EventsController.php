@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -101,7 +102,13 @@ class EventsController extends BaseController
      */
 
     public function getEventsWithWorkshops() {
-        throw new \Exception('implement in coding task 1');
+        try {
+            $get_events_with_workshops = Event::with('workShops')->get();
+            $response = successResponse($get_events_with_workshops, 'Data fetch successfully');
+        } catch (\Exception $e) {
+            $response = errorResponse($e->getMessage());
+        }
+        return $response;
     }
 
 
@@ -179,6 +186,15 @@ class EventsController extends BaseController
      */
 
     public function getFutureEventsWithWorkshops() {
-        throw new \Exception('implement in coding task 2');
+        try {
+            $get_future_events_with_workshops = Event::with('workShops')
+                ->whereHas('workShops',function($q) {
+                    $q->where('start','>', Carbon::now());
+                })->get();
+            $response = successResponse($get_future_events_with_workshops, 'Data fetch successfully');
+        } catch (\Exception $e) {
+            $response = errorResponse($e->getMessage());
+        }
+        return $response;
     }
 }
